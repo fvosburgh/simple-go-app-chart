@@ -3,24 +3,23 @@ kind: Pod
 metadata:
   name: helm-slave
 spec:
+  imagePullSecrets:
+  - name: harbor-creds
   containers:
-  - name: helm-slave
+  - name: jnlp
     image: harbor.training.boxboat.io/library/helm-slave
     imagePullPolicy: Always
-    args: \${computer.jnlpmac} \${computer.name}
+    command: ["/bin/sh"]
     tty: true
     volumeMounts:
-      - name: jenkins-docker-cfg
-        mountPath: /root
+      - name: jenkins-kube-cfg
+        mountPath: /root/.kube/config
+        subpath: config
+        readOnly: true
   volumes:
-  - name: jenkins-docker-cfg
-    projected:
-      sources:
-      - secret:
-          name: jenkins-kubeconfig
-          items:
-            - key: kubeconfig
-              path: .kube/config
+  - name: jenkins-kube-cfg
+    secret:
+      secretName: jenkins-kubeconfig
 """
   ) {
   node(POD_LABEL) {
@@ -28,8 +27,8 @@ spec:
       checkout scm
     }
     stage('deploy') {
-      container(name: 'helm-slave', shell: '/bin/sh') {
-        sh 'helm install -n simple-go-app --namespace simple-go-app .'
+      container(name: 'jnlp', shell: '/bin/sh') {
+        sh 'helm install -n simple-go-app --namespace simple-go-app ./simple-go-app'
       }
     }
   }
