@@ -14,22 +14,27 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 80
 
 ingress:
   enabled: false
-  annotations: {}
+  annotations:
+    certmanager.k8s.io/acme-http01-edit-in-place: "true"
+    kubernetes.io/ingress.global-static-ip-name: training-app
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
+    - host: sample-app.training.boxboat.io
       paths: []
 
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls:
+  - secretName: sample-app-tls
+    hosts:
+    - sample-app.training.boxboat.io
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
