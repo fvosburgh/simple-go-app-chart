@@ -29,7 +29,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: sample-app.training.boxboat.io
-      paths: []
+      paths: ["/"]
 
   tls:
   - secretName: sample-app-tls
