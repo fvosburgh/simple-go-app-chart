@@ -18,7 +18,7 @@ service:
   port: 80
 
 ingress:
-  enabled: false
+  enabled: true
   annotations:
     certmanager.k8s.io/acme-http01-edit-in-place: "true"
     kubernetes.io/ingress.global-static-ip-name: training-app
