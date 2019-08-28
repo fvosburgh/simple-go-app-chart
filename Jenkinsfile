@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: helm-slave
-    image: harbor.azure.training.boxboat.io/library/helm-slave
+    image: poc-dtr-1.boxboat.net/admin/demo/helm-slave
     imagePullPolicy: Always
     tty: true
     volumeMounts:
