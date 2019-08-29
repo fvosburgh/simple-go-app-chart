@@ -1,0 +1,9 @@
+common:
+  images:
+    - demo/sample-app
+deploy:
+  deploymentMap:
+    dev:
+      environmentKey: dev
+      event: commit/master
+      trigger: true
