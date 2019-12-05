@@ -1,20 +1,35 @@
-@Library('jenkins-shared-library@develop')
-import com.boxboat.jenkins.pipeline.common.vault.*
-import com.boxboat.jenkins.pipeline.deploy.kubernetes.*
-import com.demo.jenkins.pipeline.deploy.*
-
-properties(demoDeployProps.props())
-
-def deploy = new DemoDeploy(
-  app: "simple-go-app",
-)
-
-node(label: 'docker') {
-  deploy.wrap {
-
-    stage ('Deploy') {
-      deploy.deploy()
+podTemplate(yaml: """
+kind: Pod
+metadata:
+  name: helm-slave
+spec:
+  containers:
+  - name: helm-slave
+    image: harbor.training.boxboat.io/demo/helm-slave:latest
+    imagePullPolicy: Always
+    tty: true
+    volumeMounts:
+      - name: jenkins-kube-cfg
+        mountPath: /root
+  volumes:
+  - name: jenkins-kube-cfg
+    projected:
+      sources:
+      - secret:
+          name: jenkins-kubeconfig
+          items:
+            - key: kubeconfig
+              path: .kube/config
+"""
+  ) {
+  node(POD_LABEL) {
+    stage('checkout') {
+      checkout scm
     }
-
+    stage('deploy') {
+      container(name: 'helm-slave', shell: '/bin/sh') {
+        sh 'helm install --kubeconfig /root/.kube/config --kube-context training-context -n simple-go-app --namespace simple-go-app ./simple-go-app/'
+      }
+    }
   }
 }
