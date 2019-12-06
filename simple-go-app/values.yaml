@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: harbor.training.boxboat.io/demo/go-app
+  repository: harbor.training.boxboat.io/library/go-app
   pullPolicy: Always
   tag: latest
 
